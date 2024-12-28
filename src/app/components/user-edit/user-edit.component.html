@@ -1,0 +1,11 @@
+<h1>Add User</h1>
+<form [formGroup]="form" (ngSubmit)="addUser()">
+    <label for="name">Name</label>
+    <input id="name" type="text" formControlName="name">
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email">
+    <button type="submit" [disabled]="form.invalid">Add user</button>
+</form>
+@if(isError){
+<p>Failed to save user</p>
+}

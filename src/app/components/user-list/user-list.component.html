@@ -1,0 +1,21 @@
+@let users = users$ | async;
+@if(users?.length){
+<table>
+    <thead>
+        <th>id</th>
+        <th>Name</th>
+        <th>Email</th>
+    </thead>
+    <tbody>
+        @for(user of users; track user.id){
+        <tr>
+            <td>{{user.id}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+        </tr>
+        }
+    </tbody>
+</table>
+} @else {
+<p>There are no users</p>
+}

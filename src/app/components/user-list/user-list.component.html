@@ -8,7 +8,7 @@
     </thead>
     <tbody>
         @for(user of users; track user.id){
-        <tr>
+        <tr (click)="selectUser(user.id)">
             <td>{{user.id}}</td>
             <td>{{user.name}}</td>
             <td>{{user.email}}</td>

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { UserListComponent } from '../user-list/user-list.component';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -12,4 +12,9 @@ import { RouterLink } from '@angular/router';
   styleUrl: './users.component.css',
 })
 export class UsersComponent {
+  private router = inject(Router);
+
+  userSelected(id: string) {
+    this.router.navigate(["users/edit", id]);
+  }
 }

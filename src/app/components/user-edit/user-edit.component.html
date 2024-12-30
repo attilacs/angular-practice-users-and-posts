@@ -4,6 +4,7 @@
     <input id="name" type="text" formControlName="name">
     <label for="email">Email</label>
     <input id="email" type="email" formControlName="email">
+    <button type="button" (click)="cancel()">Cancel</button>
     <button type="submit" [disabled]="form.invalid">Add user</button>
 </form>
 @if(isError){

@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { UsersComponent } from './components/users/users.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { UserEditComponent } from './components/user-edit/user-add.component';
+import { UserEditComponent } from './components/user-edit/user-edit.component';
 
 export const routes: Routes = [
     { path: 'home', title: 'Home', component: HomeComponent },

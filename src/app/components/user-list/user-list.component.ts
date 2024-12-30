@@ -21,7 +21,7 @@ export class UserListComponent {
     this.getUsers();
   }
 
-  private getUsers() {
+  getUsers() {
     this.users$ = this.service.getUsers();
   }
 

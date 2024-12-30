@@ -21,4 +21,8 @@ export class UserService {
   addUser(user: UserAddDto): Observable<User> {
     return this.http.post<User>(this.url, user);
   }
+
+  updateUser(id: string, user: UserAddDto): Observable<User> {
+    return this.http.patch<User>(`${this.url}/${id}`, user);
+  }
 }

@@ -10,6 +10,11 @@ interface UserForm {
   email: FormControl<string | null>;
 }
 
+enum SubscriptionKey {
+  Init = 'init',
+  Save = 'save',
+}
+
 @Component({
   selector: 'app-user-edit',
   imports: [
@@ -23,16 +28,14 @@ export class UserEditComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
-  private initSubscription: Subscription | undefined;
-  private saveSubscription: Subscription | undefined;
+  private subScriptions = new Map<SubscriptionKey, Subscription>();
   isError = false;
   userId: string | null = null;
   form: FormGroup<UserForm>;
 
   constructor() {
     this.destroyRef.onDestroy(() => {
-      this.initSubscription?.unsubscribe();
-      this.saveSubscription?.unsubscribe();
+      this.unsubscribeAll();
     });
 
     this.form = new FormGroup({
@@ -42,7 +45,8 @@ export class UserEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initSubscription = this.route.paramMap.pipe(
+    this.unsubscribe(SubscriptionKey.Init);
+    const initSubscription = this.route.paramMap.pipe(
       switchMap((param) => {
         const id = param.get('id');
         if (id) {
@@ -68,6 +72,7 @@ export class UserEditComponent implements OnInit {
         return of(null);
       }),
     ).subscribe();
+    this.subScriptions.set(SubscriptionKey.Init, initSubscription);
   }
 
   private initUserData(initial?: User) {
@@ -89,7 +94,8 @@ export class UserEditComponent implements OnInit {
       ? this.service.updateUser(this.userId, { name, email })
       : this.service.addUser({ name, email });
 
-    this.saveSubscription = apiCall.subscribe({
+    this.unsubscribe(SubscriptionKey.Save);
+    const saveSubscription = apiCall.subscribe({
       next: () => {
         this.router.navigate(["/users"]);
       },
@@ -97,9 +103,26 @@ export class UserEditComponent implements OnInit {
         this.isError = true;
       }
     });
+    this.subScriptions.set(SubscriptionKey.Save, saveSubscription);
   }
 
   cancel(): void {
     this.router.navigate(["/users"]);
+  }
+
+  private unsubscribe(subscriptionKey: SubscriptionKey): void {
+    const subscription = this.subScriptions.get(subscriptionKey);
+    if (!subscription) {
+      return;
+    }
+    subscription.unsubscribe();
+    this.subScriptions.delete(subscriptionKey);
+  }
+
+  private unsubscribeAll(): void {
+    for (const subScriptions of this.subScriptions.values()) {
+      subScriptions.unsubscribe();
+    }
+    this.subScriptions.clear();
   }
 }

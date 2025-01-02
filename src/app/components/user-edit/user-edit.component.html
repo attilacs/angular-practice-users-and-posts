@@ -5,6 +5,9 @@
     <label for="email">Email</label>
     <input id="email" type="email" formControlName="email">
     <button type="button" (click)="cancel()">Cancel</button>
+    @if(userId){
+    <button type="button" (click)="deleteUser()">Delete</button>
+    }
     <button type="submit" [disabled]="form.invalid">Save</button>
 </form>
 @if(isError){

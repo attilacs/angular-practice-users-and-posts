@@ -13,6 +13,7 @@ interface UserForm {
 enum SubscriptionKey {
   Init = 'init',
   Save = 'save',
+  Delete = 'delete',
 }
 
 @Component({
@@ -104,6 +105,22 @@ export class UserEditComponent implements OnInit {
       }
     });
     this.subScriptions.set(SubscriptionKey.Save, saveSubscription);
+  }
+
+  deleteUser(): void {
+    if (!this.userId) {
+      return;
+    }
+    if (!confirm("Do you really want to delete the user?")) {
+      return;
+    }
+    this.unsubscribe(SubscriptionKey.Delete);
+    const deleteSubscription = this.service.deleteUser(this.userId).subscribe({
+      next: () => {
+        this.router.navigate(["/users"]);
+      },
+    });
+    this.subScriptions.set(SubscriptionKey.Delete, deleteSubscription);
   }
 
   cancel(): void {

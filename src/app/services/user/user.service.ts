@@ -25,4 +25,8 @@ export class UserService {
   updateUser(id: string, user: UserAddDto): Observable<User> {
     return this.http.patch<User>(`${this.url}/${id}`, user);
   }
+
+  deleteUser(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
+  }
 }

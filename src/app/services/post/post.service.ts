@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Post, PostsEditDto } from '../../interfaces/post';
 
 @Injectable({
@@ -17,8 +17,24 @@ export class PostService {
     return this.http.get<Post[]>(url);
   }
 
+  getPostsById(id: string): Observable<Post | null> {
+    const url = `${this.url}?id=${id}`;
+    return this.http.get<Post[]>(url).pipe(
+      map((posts) => {
+        if (posts.length) {
+          return posts[0];
+        }
+        return null;
+      }),
+    );
+  }
+
   addPost(post: PostsEditDto): Observable<Post> {
     return this.http.post<Post>(this.url, post);
   }
 
+  updatePost(id: string, post: PostsEditDto): Observable<Post> {
+    const url = `${this.url}/${id}`;
+    return this.http.patch<Post>(url, post);
+  }
 }

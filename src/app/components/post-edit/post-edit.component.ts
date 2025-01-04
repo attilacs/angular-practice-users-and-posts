@@ -1,11 +1,21 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../interfaces/user';
 import { UserService } from '../../services/user/user.service';
 import { PostService } from '../../services/post/post.service';
+import { Post } from '../../interfaces/post';
+import { of, Subscription, switchMap } from 'rxjs';
+
+interface PostForm {
+  userId: FormControl<string | null>;
+  title: FormControl<string | null>;
+  body: FormControl<string | null>;
+}
 
 enum SubscriptionKey {
+  Init = 'init',
+  Save = 'save',
   Users = 'users',
 }
 
@@ -18,12 +28,14 @@ enum SubscriptionKey {
   styleUrl: './post-edit.component.css',
 })
 export class PostEditComponent implements OnInit, OnDestroy {
+  route = inject(ActivatedRoute);
   router = inject(Router);
   postService = inject(PostService);
   userService = inject(UserService);
   users: User[] = [];
   form: FormGroup<PostForm>;
   subscriptions = new Map<SubscriptionKey, Subscription>();
+  postId: string | null = null;
 
   constructor() {
     this.form = new FormGroup({
@@ -34,12 +46,31 @@ export class PostEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const usersSubscription = this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users;
-        this.form.controls.userId.enable();
+    this.unsubScribe(SubscriptionKey.Init);
+    const initSubscription = this.route.paramMap.pipe(
+      switchMap((param) => {
+        this.postId = param.get('id');
+        if (this.postId) {
+          return this.postService.getPostsById(this.postId);
+        }
+        return of(null);
+      }),
+    ).subscribe({
+      next: (post) => {
+        if (post) {
+          this.initPost(post);
+        }
       },
     });
+    this.subscriptions.set(SubscriptionKey.Init, initSubscription);
+
+    const usersSubscription = this.userService.getUsers()
+      .subscribe({
+        next: (users) => {
+          this.users = users;
+          this.form.controls.userId.enable();
+        },
+      });
     this.subscriptions.set(SubscriptionKey.Users, usersSubscription);
   }
 
@@ -47,6 +78,12 @@ export class PostEditComponent implements OnInit, OnDestroy {
     this.unsubScribeAll();
   }
 
+  private initPost(initial?: Post) {
+    this.form = new FormGroup({
+      userId: new FormControl({ value: initial?.userId ?? '', disabled: !this.users.length }, Validators.required),
+      title: new FormControl(initial?.title ?? '', Validators.required),
+      body: new FormControl(initial?.body ?? ''),
+    });
   }
 
   savePost() {
@@ -56,11 +93,16 @@ export class PostEditComponent implements OnInit, OnDestroy {
     if (!userId || !title) {
       return;
     }
-    this.postService.addPost({ userId, title, body }).subscribe({
+    const apiCall = this.postId
+      ? this.postService.updatePost(this.postId, { userId, title, body })
+      : this.postService.addPost({ userId, title, body });
+    this.unsubScribe(SubscriptionKey.Save);
+    const saveSubscription = apiCall.subscribe({
       next: () => {
         this.router.navigate(["posts"]);
       }
-    })
+    });
+    this.subscriptions.set(SubscriptionKey.Save, saveSubscription);
   }
 
   private unsubScribe(key: SubscriptionKey): void {

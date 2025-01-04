@@ -8,7 +8,7 @@
     </thead>
     <tbody>
         @for(post of posts; track post.id){
-        <tr>
+        <tr (click)="postSelected(post.id)">
             <td>{{post.id}}</td>
             <td>{{post.title}}</td>
             <td>{{post.body}}</td>

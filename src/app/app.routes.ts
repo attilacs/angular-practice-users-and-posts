@@ -10,6 +10,7 @@ export const routes: Routes = [
     { path: 'home', title: 'Home', component: HomeComponent },
     { path: 'posts', title: 'Posts', component: PostsComponent },
     { path: 'posts/new', title: 'Add Post', component: PostEditComponent },
+    { path: 'posts/edit/:id', title: 'Edit Post', component: PostEditComponent },
     { path: 'users', title: 'Users', component: UsersComponent },
     { path: 'users/edit/:id', title: 'Edit User', component: UserEditComponent },
     { path: 'users/new', title: 'Add User', component: UserEditComponent },

@@ -3,6 +3,7 @@ import { PostService } from '../../services/post/post.service';
 import { EMPTY, Observable } from 'rxjs';
 import { Post } from '../../interfaces/post';
 import { AsyncPipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-post-list',
@@ -16,6 +17,7 @@ export class PostListComponent implements OnInit {
   userId = input.required<string | null>();
   postService = inject(PostService);
   posts$: Observable<Post[]> = EMPTY;
+  router = inject(Router);
 
   constructor() {
     effect(() => {
@@ -29,5 +31,9 @@ export class PostListComponent implements OnInit {
 
   fetchPosts() {
     this.posts$ = this.postService.getPosts(this.userId());
+  }
+
+  postSelected(id: string) {
+    this.router.navigate(["posts", "edit", id]);
   }
 }

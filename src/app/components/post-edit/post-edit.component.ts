@@ -105,6 +105,10 @@ export class PostEditComponent implements OnInit, OnDestroy {
     this.subscriptions.set(SubscriptionKey.Save, saveSubscription);
   }
 
+  cancel() {
+    this.router.navigate(["posts"]);
+  }
+
   private unsubScribe(key: SubscriptionKey): void {
     const subscription = this.subscriptions.get(key);
     if (!subscription) {

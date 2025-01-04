@@ -1,0 +1,13 @@
+<form [formGroup]="form" (ngSubmit)="savePost()">
+    <label for="userId">User</label>
+    <select id="userId" formControlName="userId">
+        @for(user of users; track user.id) {
+        <option [value]="user.id">{{ user.name }}</option>
+        }
+    </select>
+    <label for="title">Title</label>
+    <input type="text" id="title" formControlName="title">
+    <label for="body">Body</label>
+    <textarea id="body" rows="3" formControlName="body"></textarea>
+    <button type="submit" [disabled]="!form.valid">Save</button>
+</form>

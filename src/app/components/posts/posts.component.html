@@ -6,6 +6,8 @@
     }
 </select>
 
+<button type="button" (click)="addPost()">Add post</button>
+
 @defer{
 <app-post-list [userId]="selectedUserId.value" />
 }@loading {

@@ -5,6 +5,7 @@ import { User } from '../../interfaces/user';
 import { AsyncPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PostListComponent } from '../post-list/post-list.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-posts',
@@ -20,6 +21,7 @@ export class PostsComponent implements OnInit {
   userService = inject(UserService);
   users$: Observable<User[]>;
   userId = input<string>('');
+  router = inject(Router);
   selectedUserId = new FormControl('', Validators.required);
 
   constructor() {
@@ -29,4 +31,9 @@ export class PostsComponent implements OnInit {
   ngOnInit(): void {
     this.selectedUserId.setValue(this.userId());
   }
+
+  addPost() {
+    this.router.navigate(["posts", "new"]);
+  }
+
 }

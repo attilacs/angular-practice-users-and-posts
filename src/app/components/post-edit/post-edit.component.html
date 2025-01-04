@@ -9,6 +9,9 @@
     <input type="text" id="title" formControlName="title">
     <label for="body">Body</label>
     <textarea id="body" rows="3" formControlName="body"></textarea>
+    @if(postId){
+    <button type="button" (click)="deletePost()">Delete</button>
+    }
     <button type="button" (click)="cancel()">Cancel</button>
     <button type="submit" [disabled]="!form.valid">Save</button>
 </form>

@@ -14,6 +14,7 @@ interface PostForm {
 }
 
 enum SubscriptionKey {
+  Delete = 'delete',
   Init = 'init',
   Save = 'save',
   Users = 'users',
@@ -103,6 +104,19 @@ export class PostEditComponent implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.set(SubscriptionKey.Save, saveSubscription);
+  }
+
+  deletePost() {
+    this.unsubScribe(SubscriptionKey.Delete);
+    if (!this.postId) {
+      return;
+    }
+    const subscription = this.postService.deletePost(this.postId).subscribe({
+      next: () => {
+        this.router.navigate(['posts']);
+      },
+    });
+    this.subscriptions.set(SubscriptionKey.Delete, subscription);
   }
 
   cancel() {

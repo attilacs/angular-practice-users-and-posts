@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { User, UserAddDto } from '../../interfaces/user';
 
 @Injectable({
@@ -14,8 +14,15 @@ export class UserService {
     return this.http.get<User[]>(this.url);
   }
 
-  getUserById(id: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.url}?id=${id}`);
+  getUserById(id: string): Observable<User | null> {
+    return this.http.get<User[]>(`${this.url}?id=${id}`).pipe(
+      map((users) => {
+        if (users.length) {
+          return users[0];
+        }
+        return null;
+      }),
+    );
   }
 
   addUser(user: UserAddDto): Observable<User> {

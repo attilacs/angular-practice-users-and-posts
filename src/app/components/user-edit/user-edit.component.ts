@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../services/user/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { catchError, map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import { User } from '../../interfaces/user';
 
 interface UserForm {
@@ -52,17 +52,8 @@ export class UserEditComponent implements OnInit {
         const id = param.get('id');
         if (id) {
           return this.service.getUserById(id).pipe(
-            map((user) => {
-              if (user.length) {
-                const userData = user[0];
-                if (!userData) {
-                  return null;
-                }
-                this.userId = userData.id;
-                this.initUserData(userData);
-                return userData;
-              }
-              return null;
+            tap((user) => {
+              this.initUserData(user);
             }),
             catchError((error) => {
               console.error(error);
@@ -76,10 +67,14 @@ export class UserEditComponent implements OnInit {
     this.subScriptions.set(SubscriptionKey.Init, initSubscription);
   }
 
-  private initUserData(initial?: User) {
+  private initUserData(user?: User | null) {
+    if (!user) {
+      return;
+    }
+    this.userId = user.id;
     this.form.setValue({
-      name: initial?.name ?? '',
-      email: initial?.email ?? '',
+      name: user?.name ?? '',
+      email: user?.email ?? '',
     })
   }
 

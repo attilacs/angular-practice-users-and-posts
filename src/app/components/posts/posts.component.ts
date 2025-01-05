@@ -1,8 +1,7 @@
 import { Component, inject, input, OnInit } from '@angular/core';
 import { UserService } from '../../services/user/user.service';
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { User } from '../../interfaces/user';
-import { AsyncPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PostListComponent } from '../post-list/post-list.component';
 import { Router } from '@angular/router';
@@ -10,7 +9,6 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-posts',
   imports: [
-    AsyncPipe,
     PostListComponent,
     ReactiveFormsModule,
   ],
@@ -19,17 +17,26 @@ import { Router } from '@angular/router';
 })
 export class PostsComponent implements OnInit {
   userService = inject(UserService);
-  users$: Observable<User[]>;
+  users: User[] = [];
   userId = input<string>('');
   router = inject(Router);
   selectedUserId = new FormControl('', Validators.required);
-
-  constructor() {
-    this.users$ = this.userService.getUsers();
-  }
+  private subscription: Subscription | null = null;
 
   ngOnInit(): void {
     this.selectedUserId.setValue(this.userId());
+    this.fetchUsers();
+  }
+
+  fetchUsers() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    this.subscription = this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+    });
   }
 
   addPost() {

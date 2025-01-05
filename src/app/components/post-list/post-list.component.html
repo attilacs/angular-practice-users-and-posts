@@ -1,16 +1,21 @@
-@let posts = posts$ | async;
-@if(posts?.length){
+@if(posts.length){
 <table>
     <thead>
         <th>id</th>
         <th>Title</th>
+        @if(!userId()){
+        <th>User</th>
+        }
         <th>Body</th>
     </thead>
     <tbody>
         @for(post of posts; track post.id){
-        <tr (click)="postSelected(post.id)">
+        <tr (click)="postSelected(post.id)" [title]="post.body">
             <td>{{post.id}}</td>
             <td>{{post.title}}</td>
+            @if(!userId()){
+            <td>{{post?.user?.name}}</td>
+            }
             <td>{{post.body}}</td>
         </tr>
         }

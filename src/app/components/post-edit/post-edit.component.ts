@@ -111,6 +111,9 @@ export class PostEditComponent implements OnInit, OnDestroy {
     if (!this.postId) {
       return;
     }
+    if (!confirm("Do you really want to delete the post?")) {
+      return;
+    }
     const subscription = this.postService.deletePost(this.postId).subscribe({
       next: () => {
         this.router.navigate(['posts']);

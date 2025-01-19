@@ -43,4 +43,12 @@ export class PostsComponent implements OnInit {
     this.router.navigate(["posts", "new"]);
   }
 
+  editPosts() {
+    const userId = this.selectedUserId.value;
+    if (!userId) {
+      return;
+    }
+    this.router.navigate(["posts", "user", userId]);
+  }
+
 }

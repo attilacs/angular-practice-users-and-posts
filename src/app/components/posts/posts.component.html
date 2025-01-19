@@ -8,7 +8,7 @@
 <button type="button" (click)="addPost()">Add post</button>
 
 @if(selectedUserId.value){
-<button type="button">Edit posts</button>
+<button type="button" (click)="editPosts()">Edit posts</button>
 }
 
 @defer{
